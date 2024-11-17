@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CerebroScan - Check Alzheimer</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>CerebroScan</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><button class="nav-button" onclick="scrollToSection('home')">Home</button></li>
+                <li><button class="nav-button" onclick="scrollToSection('how-to-use')">How to Use</button></li>
+                <li><button class="nav-button" onclick="scrollToSection('about-tumor')">About Alzheimer</button></li> <!-- New Button -->
+                <li><button class="nav-button" onclick="scrollToSection('footer')">Contact Us</button></li>
+
+                <li><button class="nav-button" onclick="goBack()">Back</button></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section id="home" class="hero">
+        <div class="hero-text">
+            <h2>Detect Alzheimer</h2>
+            <h3>Upload your MRI scan or use your webcam</h3>
+            <div class="buttons">
+                <button onclick="window.location.href='Alzheimer-upload2.html';">Upload</button>
+                <button onclick="window.location.href='Alzheimer-webcam.html';">Use Webcam</button>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="how-to-use">
+        <br>
+        <br>
+        <h2>How to Use CerebroScan for Tumor Detection</h2>
+        <br>
+        <br>
+        <div class="steps">
+            <div class="step">
+                <img src="images/download.jpeg" alt="Take Photo">
+                <h3>Step 1: Upload or Use Webcam</h3>
+                <p>Ensure you upload or capture clear MRI images for accurate results.</p>
+            </div>
+            <div class="step">
+                <img src="images/basic ios 14 app icon pack.jpeg" alt="Send Photo">
+                <h3>Step 2: Send for Analysis</h3>
+                <p>Submit the image for AI-based Alzheimer detection.</p>
+            </div>
+            <div class="step">
+                <img src="images/download (1).jpeg" alt="Receive Result">
+                <h3>Step 3: Get Your Results</h3>
+                <p>Receive the results within seconds.</p>
+            </div>
+        </div>
+    </section>
+    <section id="about-tumor" class="about-tumor">
+        <h2>What is Alzheimer's?</h2>
+        <p>Alzheimer's disease is a progressive brain disorder that slowly destroys memory and thinking skills. It leads to cognitive decline, affecting a person's ability to carry out simple tasks. Over time, it severely impacts the brain's normal functioning.</p>
+        
+        <h3>Stages of Alzheimer's</h3>
+        <div class="tumor-types">
+            <div class="tumor">
+                <h4>1. No Impairment</h4>
+                <p>In this stage, there are no noticeable symptoms of memory loss or cognitive decline. The individual functions normally, but changes in the brain might begin to occur.</p>
+            </div>
+            <div class="tumor">
+                <h4>2. Very Mild Impairment</h4>
+                <p>People may start to experience slight memory lapses, such as forgetting familiar words or the location of everyday objects. These symptoms are often attributed to normal aging.</p>
+            </div>
+            <div class="tumor">
+                <h4>3. Mild Impairment</h4>
+                <p>At this stage, memory issues and cognitive decline become more apparent. Individuals may struggle with recalling recent events or personal information and may have difficulty performing tasks that require concentration.</p>
+            </div>
+            <div class="tumor">
+                <h4>4. Moderate Impairment</h4>
+                <p>In this stage, individuals exhibit noticeable memory loss and confusion. They may have trouble recognizing familiar people, forget important events, or experience difficulty in performing daily activities without assistance.</p>
+            </div>
+        </div>
+        
+    </section>
+    
+
+    
+    <footer id="footer">
+        <br>
+        <br>
+        <p>&copy; 2024 CerebroScan. All rights reserved.</p>
+        <br>
+        <br>
+        <p>Contact us at:</p>
+        <div>
+            <p>Email: <a href="mailto:afwan@cerebroscan.com">afwan@cerebroscan.com</a></p>
+            <p>Phone: +1 (123) 456-7890</p>
+            <p>Address: 123 CerebroScan St, Suite 100, Brain City, BC 98765</p>
+        </div>
+        <br>
+        <p>Follow us on:</p>
+        <div>
+            <a href="https://x.com/Afwan_7" target="_blank">
+                <img src="images/x image.jpeg" alt="Twitter" width="30" height="30">
+            </a>&nbsp;&nbsp;
+            <a href="https://www.linkedin.com/in/moafwan/" target="_blank">
+                <img src="images/linkedin image.jpeg" alt="LinkedIn" width="30" height="30">
+            </a>&nbsp;&nbsp;
+            <a href="https://www.facebook.com/cerebroscan" target="_blank">
+                <img src="images/facebook image.jpeg" alt="Facebook" width="30" height="30">
+            </a>&nbsp;&nbsp;
+            <a href="https://github.com/moafwan/" target="_blank">
+                <img src="images/Primer.jpeg" alt="github" width="30" height="30">
+            </a>
+        </div>
+        <br>
+        <br>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

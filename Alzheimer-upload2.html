@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CerebroScan - Alzheimer upload</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+
+    <style>
+      
+      #canvas-overlay {
+        position: absolute;
+        top: 10;
+        left: auto;
+        right: auto;
+      }
+      #webcam-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      body {
+        background-image: url("static/bg.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+      b {
+        background-color: rgb(7, 7, 7);
+        font-style: bold;
+        margin: 5px;
+        border-radius: 5px;
+        padding: 2px;
+      }
+      span {
+        background-color: rgb(194, 42, 42);
+        font-style: bold;
+        margin: 5px;
+        border-radius: 5px;
+        padding: 2px;
+      }
+      strong {
+        background-color: rgb(119, 207, 56);
+        font-style: bold;
+        margin: 5px;
+        border-radius: 5px;
+        padding: 2px;
+      }
+      .container {
+        color: rgb(241, 240, 240);
+        margin-top: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 15px;
+        padding: 30px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      h1 {
+        color: white;
+        text-align: center;
+      }
+      input[type="file"] {
+        padding: 20px;
+        height: 70px;
+        display: none;
+      }
+      #start-button {
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fffdfd;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 25px;
+  display: block;
+  margin: 0 auto;
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+#start-button:hover {
+  background-color: black; /* Change background to black on hover */
+}
+      #label-container, #label, #accu {
+        text-align: center;
+      }
+
+      #downloadPdfButton {
+            padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fffdfd;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 25px;
+            display: none; /* Initially hidden */
+            margin: 0 auto;
+            transition: background-color 0.3s ease;
+        }
+        #downloadPdfButton:hover {
+  background-color: black; /* Change background to black on hover */
+}
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <header>
+      <div class="logo">
+          <h1>CerebroScan</h1>
+      </div>
+      <nav>
+          <ul>
+              <li><button class="nav-button" onclick="scrollToSection('home')">Home</button></li>
+              <li><button class="nav-button" onclick="scrollToSection('how-to-use')">How to Use</button></li>
+              <li><button class="nav-button" onclick="goBack()">Back</button></li>
+          </ul>
+      </nav>
+  </header>
+  <section id="home" >
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+  <div class="container text-center">
+    <h1>Alzheimer Detection</h1>
+    <input class="form-control hidden" type="file" id="imageInput" accept="*" />
+    <button id="start-button" type="button" onclick="init()">Start</button>
+    <div id="webcam-container"></div>
+    <p id="label-container"></p>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <h3 id="label"></h3>
+    <p id="accu"></p>
+    <button id="downloadPdfButton">Download Report</button>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+  </div>
+</section>
+
+<script>
+  const URL = "https://teachablemachine.withgoogle.com/models/JCq8V6POE/";
+
+  let model, fileInput, labelContainer, maxPredictions, canvas, ctx;
+
+  async function init() {
+    disp();
+    const modelURL = URL + "model.json";
+    const metadataURL = URL + "metadata.json";
+
+    model = await tmImage.load(modelURL, metadataURL);
+    maxPredictions = model.getTotalClasses();
+
+    const fileInput = document.getElementById("imageInput");
+    fileInput.addEventListener("change", handleImageUpload);
+
+    labelContainer = document.getElementById("label-container");
+    label = document.getElementById("label");
+    accu = document.getElementById("accu");
+    downloadPdfButton = document.getElementById("downloadPdfButton");
+    downloadPdfButton.style.display = "none"; // Hide download button initially
+
+    canvas = document.createElement("canvas");
+    canvas.id = "canvas-overlay";
+    canvas.width = 200;
+    canvas.height = 200;
+    document.getElementById("webcam-container").appendChild(canvas);
+    ctx = canvas.getContext("2d");
+
+    for (let i = 0; i < maxPredictions; i++) {
+      labelContainer.appendChild(document.createElement("div"));
+    }
+  }
+
+  function disp() {
+    var inputField = document.getElementById("imageInput");
+    inputField.style.display = "block";
+    var hidden = document.getElementById("start-button");
+    hidden.style.display = "none";
+  }
+
+  function handleImageUpload(event) {
+    const file = event.target.files[0];
+    const img = new Image();
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      img.onload = function () {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        predict();
+      };
+
+      img.src = e.target.result;
+    };
+
+    reader.readAsDataURL(file);
+  }
+  
+  document.getElementById('downloadPdfButton').addEventListener('click', () => {
+        const name = prompt("Please enter your name:");
+        const age = prompt("Please enter your age:");
+        if (name && age && !isNaN(age)) {
+  generatePDF(currentPredictionType, currentConfidence, name, age);
+} else {
+  alert("Name and a valid numeric Age are required to generate the report.");
+}
+
+      });
+
+      function generatePDF(predictionType, confidence, name, age) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const dateTime = new Date().toLocaleString();
+
+    // Styling for the title
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("CerebroScan Alzheimer Detection Report", 105, 20, null, null, "center");
+
+    // Adding user information
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Date & Time: ${dateTime}`, 10, 40);
+    doc.text(`Name: ${name}`, 10, 50);
+    doc.text(`Age: ${age}`, 10, 60);
+
+    // Custom content based on detected tumor type
+    doc.setFontSize(14);
+    let tumorInfo, recommendations, precautions;
+
+    switch (predictionType) {
+        case "Very mild impairment":
+            doc.text("Detected Alzheimer Stage: Very mild imapairment", 10, 80);
+            tumorInfo = "Very mild impairment is the earliest stage of cognitive decline, often characterized by minor memory lapses and slight difficulties with complex tasks. Individuals may not notice significant changes, and daily functioning remains largely unaffected.";
+            recommendations = "Engage in mental exercises and maintain a healthy lifestyle, including regular physical activity and social interactions, to support cognitive function.";
+            precautions = "Monitor changes in memory and seek early evaluation if noticeable difficulties arise. Avoid multitasking to reduce cognitive load and stress.";
+            break;
+        case "No impairment":
+            doc.text("Result: No impairment", 10, 80);
+            tumorInfo = "No impairment indicates that an individual exhibits normal cognitive function for their age, with no significant memory or thinking difficulties. Daily activities and responsibilities are managed without noticeable challenges.";
+            recommendations = "Continue engaging in mentally stimulating activities, maintain a balanced diet, and foster social connections to support ongoing cognitive health.";
+            precautions = "Stay proactive about cognitive health by avoiding excessive stress and regularly participating in activities that promote brain health, such as puzzles and reading.";
+            break;
+        case "Moderate impairment":
+            doc.text("Detected Alzheimer Stage: Moderate impairment", 10, 80);
+            tumorInfo = "Moderate impairment is characterized by noticeable cognitive decline, where individuals may struggle with daily tasks, memory recall, and comprehension of language. Assistance with daily living activities may be required.";
+            recommendations = "Seek evaluation from a healthcare professional for tailored cognitive rehabilitation strategies and potential treatment options. Engage in supportive therapies to improve daily functioning.";
+            precautions = "Establish a structured routine to minimize confusion and frustration. Reduce distractions during tasks and provide clear instructions to aid understanding.";
+            break;
+        
+        default:
+            doc.text("Result: Unable to determine Alzheimer Stage.", 10, 80);
+            tumorInfo = "The detected Alzheimer Stage could not be categorized with high confidence. Further analysis may be necessary.";
+            recommendations = "Consult a medical specialist for additional diagnostic procedures.";
+            precautions = "Adopt a healthy lifestyle, avoid carcinogens, and maintain regular medical check-ups.";
+            break;
+    }
+
+    // Display tumor information, recommendations, and precautions
+    doc.setFontSize(12);
+    doc.text(`Confidence Level: ${confidence}%`, 10, 90);
+    doc.text("Alzheimer Information:", 10, 100);
+    doc.setFont("helvetica", "italic");
+    doc.text(doc.splitTextToSize(tumorInfo, 180), 10, 110);
+
+    doc.setFont("helvetica", "normal");
+    doc.text("Precautions and Recommendations:", 10, 140);
+    doc.text(doc.splitTextToSize(recommendations, 180), 10, 150);
+    doc.text("Precautions:", 10, 170);
+    doc.setFont("helvetica", "italic");
+    doc.text(doc.splitTextToSize(precautions, 180), 10, 180);
+
+    // Include the helpline number
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("For any inquiries, contact this helpline:  0333 150 3456", 10, 210);
+
+    // Footer statement
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "italic");
+    doc.text("This is AI generated report by CerebroScan.", 105, 280, null, null, "center");
+
+    doc.save(`${predictionType}_Report.pdf`);
+}
+
+
+
+  let currentPredictionType = "";
+  let currentConfidence = 0;
+
+  async function predict() {
+    const prediction = await model.predict(canvas);
+    let hasPrediction = false;
+
+    if (prediction[0].probability >= 0.8) {
+      currentPredictionType = "Very mild impairment";
+      currentConfidence = (prediction[0].probability * 100).toFixed(2);
+      label.innerHTML = "The Brain has <b>very mild</b> impairment.";
+      accu.innerHTML = `Confidence = ${currentConfidence}%`;
+      hasPrediction = true;
+
+    } else if (prediction[1].probability >= 0.8) {
+      currentPredictionType = "No impairment";
+      currentConfidence = (prediction[1].probability * 100).toFixed(2);
+      label.innerHTML = "The Brain has <b>NO</b> impairment.";
+      accu.innerHTML = `Confidence = ${currentConfidence}%`;
+      hasPrediction = true;
+
+    } else if (prediction[2].probability >= 0.8) {
+      currentPredictionType = "Moderate impairment";
+      currentConfidence = (prediction[2].probability * 100).toFixed(2);
+      label.innerHTML = "The Brain has <b>Moderate</b> impairment.";
+      accu.innerHTML = `Confidence = ${currentConfidence}%`;
+      hasPrediction = true;
+
+    } else {
+      label.innerHTML = "INVALID input or Brain Not Found";
+      accu.innerHTML = "";
+    }
+
+    // Display the download button only if a prediction result is shown
+    downloadPdfButton.style.display = hasPrediction ? "block" : "none";
+  }
+
+  function goBack() {
+    window.history.back();
+  }
+
+  function scrollToSection(sectionId) {
+    document.getElementById(sectionId).scrollIntoView({
+      behavior: 'smooth'
+    });
+  }
+</script>
+
+
+    <section id="how-to-use">
+      <br>
+      <br>
+      <h2>How to Use upload feature of CerebroScan </h2>
+      <br>
+      <br>
+      <div class="steps">
+          <div class="step">
+              <img src="images/download.jpeg" alt="Take Photo">
+              <h3>Step 1: click on Start button</h3>
+              <p>Ensure you upload MRI images for accurate results.</p>
+          </div>
+          <div class="step">
+              <img src="images/basic ios 14 app icon pack.jpeg" alt="Send Photo">
+              <h3>Step 2: Send for Analysis</h3>
+              <p>once u click on start, choose the image you want and click open.</p>
+          </div>
+          <div class="step">
+              <img src="images/download (1).jpeg" alt="Receive Result">
+              <h3>Step 3: Get Your Results</h3>
+              <p>Receive the results within seconds.</p>
+          </div>
+      </div>
+  </section>
+  <footer id="footer">
+    
+    <p>&copy; 2024 CerebroScan. All rights reserved.</p>
+   
+    
+    
+</footer>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CerebroScan - Check Tumor</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+
+    <style>
+      
+      #canvas-overlay {
+        position: absolute;
+        top: 10;
+        left: auto;
+        right: auto;
+      }
+      #webcam-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      body {
+        background-image: url("static/bg.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+      b {
+        background-color: rgb(7, 7, 7);
+        font-style: bold;
+        margin: 5px;
+        border-radius: 5px;
+        padding: 2px;
+      }
+      span {
+        background-color: rgb(194, 42, 42);
+        font-style: bold;
+        margin: 5px;
+        border-radius: 5px;
+        padding: 2px;
+      }
+      strong {
+        background-color: rgb(119, 207, 56);
+        font-style: bold;
+        margin: 5px;
+        border-radius: 5px;
+        padding: 2px;
+      }
+      .container {
+        color: rgb(241, 240, 240);
+        margin-top: 20px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 15px;
+        padding: 30px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      h1 {
+        color: white;
+        text-align: center;
+      }
+      input[type="file"] {
+        padding: 20px;
+        height: 70px;
+        display: none;
+      }
+      #start-button {
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fffdfd;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 25px;
+  display: block;
+  margin: 0 auto;
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+#start-button:hover {
+  background-color: black; /* Change background to black on hover */
+}
+      #label-container, #label, #accu {
+        text-align: center;
+      }
+
+      #downloadPdfButton {
+            padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fffdfd;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 25px;
+            display: none; /* Initially hidden */
+            margin: 0 auto;
+            transition: background-color 0.3s ease;
+        }
+        #downloadPdfButton:hover {
+  background-color: black; /* Change background to black on hover */
+}
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <header>
+      <div class="logo">
+          <h1>CerebroScan</h1>
+      </div>
+      <nav>
+          <ul>
+              <li><button class="nav-button" onclick="scrollToSection('home')">Home</button></li>
+              <li><button class="nav-button" onclick="scrollToSection('how-to-use')">How to Use</button></li>
+              <li><button class="nav-button" onclick="goBack()">Back</button></li>
+          </ul>
+      </nav>
+  </header>
+  <section id="home" >
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+  <div class="container text-center">
+    <h1>Tumor Detection</h1>
+    <input class="form-control hidden" type="file" id="imageInput" accept="*" />
+    <button id="start-button" type="button" onclick="init()">Start</button>
+    <div id="webcam-container"></div>
+    <p id="label-container"></p>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <h3 id="label"></h3>
+    <p id="accu"></p>
+    <button id="downloadPdfButton">Download Report</button>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+  </div>
+</section>
+
+<script>
+  const URL = "https://teachablemachine.withgoogle.com/models/ZbiQQcktp/";
+
+  let model, fileInput, labelContainer, maxPredictions, canvas, ctx;
+
+  async function init() {
+    disp();
+    const modelURL = URL + "model.json";
+    const metadataURL = URL + "metadata.json";
+
+    model = await tmImage.load(modelURL, metadataURL);
+    maxPredictions = model.getTotalClasses();
+
+    const fileInput = document.getElementById("imageInput");
+    fileInput.addEventListener("change", handleImageUpload);
+
+    labelContainer = document.getElementById("label-container");
+    label = document.getElementById("label");
+    accu = document.getElementById("accu");
+    downloadPdfButton = document.getElementById("downloadPdfButton");
+    downloadPdfButton.style.display = "none"; // Hide download button initially
+
+    canvas = document.createElement("canvas");
+    canvas.id = "canvas-overlay";
+    canvas.width = 200;
+    canvas.height = 200;
+    document.getElementById("webcam-container").appendChild(canvas);
+    ctx = canvas.getContext("2d");
+
+    for (let i = 0; i < maxPredictions; i++) {
+      labelContainer.appendChild(document.createElement("div"));
+    }
+  }
+
+  function disp() {
+    var inputField = document.getElementById("imageInput");
+    inputField.style.display = "block";
+    var hidden = document.getElementById("start-button");
+    hidden.style.display = "none";
+  }
+
+  function handleImageUpload(event) {
+    const file = event.target.files[0];
+    const img = new Image();
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      img.onload = function () {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        predict();
+      };
+
+      img.src = e.target.result;
+    };
+
+    reader.readAsDataURL(file);
+  }
+  
+  document.getElementById('downloadPdfButton').addEventListener('click', () => {
+        const name = prompt("Please enter your name:");
+        const age = prompt("Please enter your age:");
+        if (name && age && !isNaN(age)) {
+  generatePDF(currentPredictionType, currentConfidence, name, age);
+} else {
+  alert("Name and a valid numeric Age are required to generate the report.");
+}
+
+      });
+
+      function generatePDF(predictionType, confidence, name, age) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const dateTime = new Date().toLocaleString();
+
+    // Styling for the title
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("CerebroScan Tumor Detection Report", 105, 20, null, null, "center");
+
+    // Adding user information
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Date & Time: ${dateTime}`, 10, 40);
+    doc.text(`Name: ${name}`, 10, 50);
+    doc.text(`Age: ${age}`, 10, 60);
+
+    // Custom content based on detected tumor type
+    doc.setFontSize(14);
+    let tumorInfo, recommendations, precautions;
+
+    switch (predictionType) {
+        case "Pituitary Tumor":
+            doc.text("Detected Tumor Type: Pituitary Tumor", 10, 80);
+            tumorInfo = "Pituitary tumors are abnormal growths that develop in the pituitary gland. They may affect hormone production, causing various symptoms.";
+            recommendations = "Consult an endocrinologist for hormone evaluation and discuss potential treatment options.";
+            precautions = "Avoid stress as it may exacerbate symptoms. Maintain a balanced diet to support hormonal health.";
+            break;
+        case "No Tumor":
+            doc.text("Result: No Tumor Detected", 10, 80);
+            tumorInfo = "Our scan did not detect any tumors in the provided sample. Regular check-ups are advised for proactive health monitoring.";
+            recommendations = "Maintain a healthy lifestyle and consider regular health screenings.";
+            precautions = "Avoid smoking and alcohol consumption as they can increase the risk of various health conditions.";
+            break;
+        case "Meningioma Tumor":
+            doc.text("Detected Tumor Type: Meningioma Tumor", 10, 80);
+            tumorInfo = "Meningiomas are slow-growing tumors originating in the meninges, the protective membranes of the brain and spinal cord.";
+            recommendations = "Immediate consultation with a neurologist is advised for a thorough evaluation and treatment options.";
+            precautions = "Avoid smoking and excessive alcohol as they may increase the likelihood of tumor growth. Reduce exposure to radiation.";
+            break;
+        case "Glioma Tumor":
+            doc.text("Detected Tumor Type: Glioma Tumor", 10, 80);
+            tumorInfo = "Gliomas are tumors that arise in the glial cells of the brain, potentially requiring targeted treatments.";
+            recommendations = "Seek advice from an oncology specialist for potential treatment plans.";
+            precautions = "Avoid smoking, as it can increase the risk of cancer. Adopt a diet rich in antioxidants and exercise regularly to support brain health.";
+            break;
+        default:
+            doc.text("Result: Unable to determine tumor type.", 10, 80);
+            tumorInfo = "The detected tumor type could not be categorized with high confidence. Further analysis may be necessary.";
+            recommendations = "Consult a medical specialist for additional diagnostic procedures.";
+            precautions = "Adopt a healthy lifestyle, avoid carcinogens, and maintain regular medical check-ups.";
+            break;
+    }
+
+    // Display tumor information, recommendations, and precautions
+    doc.setFontSize(12);
+    doc.text(`Confidence Level: ${confidence}%`, 10, 90);
+    doc.text("Tumor Information:", 10, 100);
+    doc.setFont("helvetica", "italic");
+    doc.text(doc.splitTextToSize(tumorInfo, 180), 10, 110);
+
+    doc.setFont("helvetica", "normal");
+    doc.text("Precautions and Recommendations:", 10, 140);
+    doc.text(doc.splitTextToSize(recommendations, 180), 10, 150);
+    doc.text("Precautions:", 10, 170);
+    doc.setFont("helvetica", "italic");
+    doc.text(doc.splitTextToSize(precautions, 180), 10, 180);
+
+    // Include the helpline number
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("For any inquiries, contact this helpline: 7880083005", 10, 210);
+
+    // Footer statement
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "italic");
+    doc.text("This is AI generated report by CerebroScan.", 105, 280, null, null, "center");
+
+    doc.save(`${predictionType}_Report.pdf`);
+}
+
+
+
+  let currentPredictionType = "";
+  let currentConfidence = 0;
+
+  async function predict() {
+    const prediction = await model.predict(canvas);
+    let hasPrediction = false;
+
+    if (prediction[0].probability >= 0.8) {
+      currentPredictionType = "Pituitary Tumor";
+      currentConfidence = (prediction[0].probability * 100).toFixed(2);
+      label.innerHTML = "The Brain has <b>Pituitary</b> Tumor.";
+      accu.innerHTML = `Confidence = ${currentConfidence}%`;
+      hasPrediction = true;
+
+    } else if (prediction[1].probability >= 0.8) {
+      currentPredictionType = "No Tumor";
+      currentConfidence = (prediction[1].probability * 100).toFixed(2);
+      label.innerHTML = "The Brain has <b>NO</b> Tumor.";
+      accu.innerHTML = `Confidence = ${currentConfidence}%`;
+      hasPrediction = true;
+
+    } else if (prediction[2].probability >= 0.8) {
+      currentPredictionType = "Meningioma Tumor";
+      currentConfidence = (prediction[2].probability * 100).toFixed(2);
+      label.innerHTML = "The Brain has <b>Meningioma</b> Tumor.";
+      accu.innerHTML = `Confidence = ${currentConfidence}%`;
+      hasPrediction = true;
+
+    } else if (prediction[3].probability >= 0.8) {
+      currentPredictionType = "Glioma Tumor";
+      currentConfidence = (prediction[3].probability * 100).toFixed(2);
+      label.innerHTML = "The Brain has <b>Glioma</b> Tumor.";
+      accu.innerHTML = `Confidence = ${currentConfidence}%`;
+      hasPrediction = true;
+
+    } else {
+      label.innerHTML = "INVALID input or Brain Not Found";
+      accu.innerHTML = "";
+    }
+
+    // Display the download button only if a prediction result is shown
+    downloadPdfButton.style.display = hasPrediction ? "block" : "none";
+  }
+
+  function goBack() {
+    window.history.back();
+  }
+
+  function scrollToSection(sectionId) {
+    document.getElementById(sectionId).scrollIntoView({
+      behavior: 'smooth'
+    });
+  }
+</script>
+
+
+    <section id="how-to-use">
+      <br>
+      <br>
+      <h2>How to Use upload feature of CerebroScan </h2>
+      <br>
+      <br>
+      <div class="steps">
+          <div class="step">
+              <img src="images/download.jpeg" alt="Take Photo">
+              <h3>Step 1: click on Start button</h3>
+              <p>Ensure you upload MRI images for accurate results.</p>
+          </div>
+          <div class="step">
+              <img src="images/basic ios 14 app icon pack.jpeg" alt="Send Photo">
+              <h3>Step 2: Send for Analysis</h3>
+              <p>once u click on start, choose the image you want and click open.</p>
+          </div>
+          <div class="step">
+              <img src="images/download (1).jpeg" alt="Receive Result">
+              <h3>Step 3: Get Your Results</h3>
+              <p>Receive the results within seconds.</p>
+          </div>
+      </div>
+  </section>
+  <footer id="footer">
+    
+    <p>&copy; 2024 CerebroScan. All rights reserved.</p>
+   
+    
+    
+</footer>
+</body>
+</html>

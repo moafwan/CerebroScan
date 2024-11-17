@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CerebroScan - Check Tumor</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>CerebroScan</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><button class="nav-button" onclick="scrollToSection('home')">Home</button></li>
+                <li><button class="nav-button" onclick="scrollToSection('how-to-use')">How to Use</button></li>
+                <li><button class="nav-button" onclick="scrollToSection('about-tumor')">About Tumor</button></li> <!-- New Button -->
+                <li><button class="nav-button" onclick="scrollToSection('footer')">Contact Us</button></li>
+
+                <li><button class="nav-button" onclick="goBack()">Back</button></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section id="home" class="hero">
+        <div class="hero-text">
+            <h2>Detect Brain Tumor</h2>
+            <h3>Upload your MRI scan or use your webcam</h3>
+            <div class="buttons">
+                <button onclick="window.location.href='prediction-result.html';">Upload</button>
+                <button onclick="window.location.href='webcam-result.html';">Use Webcam</button>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="how-to-use">
+        <br>
+        <br>
+        <h2>How to Use CerebroScan for Tumor Detection</h2>
+        <br>
+        <br>
+        <div class="steps">
+            <div class="step">
+                <img src="images/download.jpeg" alt="Take Photo">
+                <h3>Step 1: Upload or Use Webcam</h3>
+                <p>Ensure you upload or capture clear MRI images for accurate results.</p>
+            </div>
+            <div class="step">
+                <img src="images/basic ios 14 app icon pack.jpeg" alt="Send Photo">
+                <h3>Step 2: Send for Analysis</h3>
+                <p>Submit the image for AI-based brain tumor detection.</p>
+            </div>
+            <div class="step">
+                <img src="images/download (1).jpeg" alt="Receive Result">
+                <h3>Step 3: Get Your Results</h3>
+                <p>Receive the results within seconds.</p>
+            </div>
+        </div>
+    </section>
+    <section id="about-tumor" class="about-tumor">
+        <h2>What is a Tumor?</h2>
+        <p>A brain tumor is a growth of abnormal cells in the brain. Tumors can be benign (non-cancerous) or malignant (cancerous) and can affect the brain's normal function depending on their size and location.</p>
+        <h3>Types of Brain Tumors</h3>
+        <div class="tumor-types">
+            <div class="tumor">
+                <h4>1. Glioma</h4>
+                <p>Gliomas are tumors that originate in the glial cells of the brain. They are one of the most common types of brain tumors.</p>
+            </div>
+            <div class="tumor">
+                <h4>2. Meningioma</h4>
+                <p>Meningiomas arise from the meninges, the layers of tissue covering the brain and spinal cord. These tumors are usually benign.</p>
+            </div>
+            <div class="tumor">
+                <h4>3. Pituitary Tumor</h4>
+                <p>Pituitary tumors develop in the pituitary gland, a small gland at the base of the brain. These tumors are typically non-cancerous but can affect hormone levels.</p>
+            </div>
+        </div>
+    </section>
+    
+
+    <footer id="footer">
+        <br>
+        <br>
+        <p>&copy; 2024 CerebroScan. All rights reserved.</p>
+        <br>
+        <br>
+        <p>Contact us at:</p>
+        <div>
+            <p>Email: <a href="mailto:afwan@cerebroscan.com">afwan@cerebroscan.com</a></p>
+            <p>Phone: +1 (123) 456-7890</p>
+            <p>Address: 123 CerebroScan St, Suite 100, Brain City, BC 98765</p>
+        </div>
+        <br>
+        <p>Follow us on:</p>
+        <div>
+            <a href="https://x.com/Afwan_7" target="_blank">
+                <img src="images/x image.jpeg" alt="Twitter" width="30" height="30">
+            </a>&nbsp;&nbsp;
+            <a href="https://www.linkedin.com/in/moafwan/" target="_blank">
+                <img src="images/linkedin image.jpeg" alt="LinkedIn" width="30" height="30">
+            </a>&nbsp;&nbsp;
+            <a href="https://www.facebook.com/cerebroscan" target="_blank">
+                <img src="images/facebook image.jpeg" alt="Facebook" width="30" height="30">
+            </a>&nbsp;&nbsp;
+            <a href="https://github.com/moafwan/" target="_blank">
+                <img src="images/Primer.jpeg" alt="github" width="30" height="30">
+            </a>
+        </div>
+        <br>
+        <br>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
