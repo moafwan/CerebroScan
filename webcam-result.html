@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wheat Leaf Disease Detection</title>
     <link
       rel="stylesheet"
@@ -69,6 +71,13 @@
         <div class="logo">
             <h1>CerebroScan</h1>
         </div>
+        <!-- Hamburger menu -->
+      <div class="hamburger" onclick="toggleMobileMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
         <nav>
             <ul>
                 <li><button class="nav-button" onclick="scrollToSection('home')">Home</button></li>
@@ -76,6 +85,16 @@
                 <li><button class="nav-button" onclick="goBack()">Back</button></li>
             </ul>
         </nav>
+         <!-- Navigation for mobile -->
+       <div class="mobile-menu" id="mobileMenu" >
+        <ul>
+            <li><button onclick="scrollToSection('home')">Home</button></li>
+            <li><button onclick="scrollToSection('how-to-use')">How to Use</button></li>
+            <li><button class="nav-button" onclick="goBack()">Back</button></li>
+
+        </ul>
+    </div>
+
     </header>
     <script>
       const URL = "https://teachablemachine.withgoogle.com/models/ZbiQQcktp/";
@@ -189,6 +208,11 @@ function scrollToSection(sectionId) {
         behavior: 'smooth'
     });
 }
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('show');
+}
+
     </script>
     <section id="home" >
         <br>
@@ -225,13 +249,13 @@ function scrollToSection(sectionId) {
         <div class="steps">
             <div class="step">
                 <img src="images/phone.jpeg" alt="Take Photo">
-                <h3>Step 1: click on Start button and place your phone</h3>
+                <h3>Step 1: Click On Start Button And Place Your Phone</h3>
                 <p>Ensure you place your phone close to webcam for accurate results.</p>
             </div>
             <div class="step">
                 <img src="images/download.jpeg" alt="Send Photo">
-                <h3>Step 2: Show image for Analysis</h3>
-                <p>show MRI scanned image of tumor to the webcam.</p>
+                <h3>Step 2: Show Image For Analysis</h3>
+                <p>Show MRI scanned image of tumor to the webcam.</p>
             </div>
             <div class="step">
                 <img src="images/download (1).jpeg" alt="Receive Result">

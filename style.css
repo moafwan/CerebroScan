@@ -5,7 +5,7 @@ body {
     background-color: #000000;
     padding-top: 100px; /* Space for the fixed header */
     max-width: 100%;
-    overflow-x: hidden; /* Avoid horizontal scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 
 }
 
@@ -16,16 +16,18 @@ header {
     right: 0;
     z-index: 1000;
     background-color: rgba(0, 0, 0, 0.8);
-    padding: 20px;
+    padding: 10px 20px; /* Adjust padding for better fit */
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Space between logo and hamburger/nav */
     align-items: center;
     margin-bottom: 30px;
+    box-sizing: border-box; /* Include padding in width */
+
 }
 
 header h1 {
     font-size: 24px;
-    color: #fff;
+    color: #333;
 }
 
 nav {
@@ -33,14 +35,13 @@ nav {
     max-width: 100%;
     overflow-x: hidden; /* Avoid horizontal scrolling */
 }
-
 nav ul {
     list-style-type: none;
     display: flex;
     margin: 0;
     padding: 0;
+    flex-wrap: wrap; /* Allow wrapping if needed */
 }
-
 nav ul li {
     margin-left: 20px;
 }
@@ -73,8 +74,10 @@ nav ul li {
     margin: 4px 0;
 }
 
+
+/* Mobile Menu */
 .mobile-menu {
-    display: none;
+    display: none; /* Hidden by default */
     flex-direction: column;
     background-color: rgba(0, 0, 0, 0.9);
     position: absolute;
@@ -84,6 +87,7 @@ nav ul li {
     border-radius: 10px;
     padding: 10px;
     z-index: 1000;
+    box-sizing: border-box;
 }
 
 .mobile-menu ul {
@@ -123,6 +127,9 @@ nav ul li {
     
     .mobile-menu.show {
         display: flex;
+    }
+    header {
+        padding: 10px 15px; /* Reduce padding for mobile view */
     }
 }
 
