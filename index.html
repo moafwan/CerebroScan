@@ -11,6 +11,12 @@
         <div class="logo">
             <h1>CerebroScan</h1>
         </div>
+         <!-- Hamburger menu -->
+         <div class="hamburger" onclick="toggleMobileMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
         <nav>
             <ul>
                 <li><button class="nav-button" onclick="scrollToSection('home')">Home</button></li>
@@ -19,6 +25,15 @@
                 <li><button class="nav-button" onclick="scrollToSection('footer')">Contact Us</button></li>
             </ul>
         </nav>
+          <!-- Navigation for mobile -->
+          <div class="mobile-menu" id="mobileMenu">
+            <ul>
+                <li><button onclick="scrollToSection('home')">Home</button></li>
+                <li><button onclick="scrollToSection('how-to-use')">How to Use</button></li>
+                <li><button onclick="scrollToSection('about-us')">About Us</button></li>
+                <li><button onclick="scrollToSection('footer')">Contact Us</button></li>
+            </ul>
+        </div>
     </header>
     
     <section id="home" class="hero">
@@ -43,12 +58,12 @@
             <div class="step">
                 <img src="images/download.jpeg" alt="Take Photo">
                 <h3>Step 1: input the image</h3>
-                <p>Ensure you upload or show the web cam clear MRI images <br/> for accurate results.</p>
+                <p>Ensure you upload or show the web cam clear MRI images for accurate results.</p>
             </div>
             <div class="step">
                 <img src="images/basic ios 14 app icon pack.jpeg" alt="Send Photo">
                 <h3>Step 2: Send for Analysis</h3>
-                <p>Submit the image to CerebroScan for AI-based <br> brain tumor or Alzheimer's detection.</p>
+                <p>Submit the image to CerebroScan for AI-based brain tumor or Alzheimer's detection.</p>
             </div>
             <div class="step">
                 <img src="images/download (1).jpeg" alt="Receive Result">
@@ -68,7 +83,7 @@
         <br>
         <br>
         <div class="about-content">
-            <p>We are a team of passionate engineering students from ATME College of Engineering, dedicated to leveraging technology for impactful solutions in healthcare.</p><br>
+            <p>We are a team of passionate engineering students from ATME College of Engineering, dedicated to leveraging technology for impactful solutions in healthcare. hi</p><br>
             <p>The idea for *CerebroScan* arose from our desire to make advanced medical diagnostics more accessible, accurate, and user-friendly. Understanding the challenges faced by patients and healthcare providers in detecting brain-related conditions early, we built this project to serve as a powerful tool for detecting brain tumor classes, including glioma, meningioma, and pituitary tumors, as well as identifying Alzheimer stages ranging from very mild impairment to moderate impairment.</p>
             <p>*CerebroScan* stands out with its superior accuracy compared to existing solutions. It offers the flexibility of uploading medical images or using a webcam for real-time detection, making the process both convenient and efficient. Additionally, when using the upload feature, users receive an option to download a detailed PDF report. This report includes precautions to take, tailored recommendations, and important helpline numbers to guide users toward appropriate medical care.</p>
             <p>By integrating cutting-edge machine learning and medical imaging technologies, *CerebroScan* aims to bridge the gap between technology and medicine. Our mission is to empower users and healthcare professionals with timely, precise, and actionable information, ensuring better outcomes and peace of mind.</p>

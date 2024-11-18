@@ -4,41 +4,126 @@ body {
     padding: 0;
     background-color: #000000;
     padding-top: 100px; /* Space for the fixed header */
+    max-width: 100%;
+    overflow-x: hidden; /* Avoid horizontal scrolling */
+
 }
 
 header {
-    position: fixed; /* Keeps the header fixed */
-    top: 0; /* Positions it at the top */
-    left: 0; /* Aligns to the left */
-    right: 0; /* Aligns to the right */
-    z-index: 1000; /* Ensures it stays above other content */
-    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.8);
     padding: 20px;
-    display: flex; /* Flexbox for alignment */
-    justify-content: space-between; /* Space between logo and nav */
-    align-items: center; /* Center align items vertically */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 30px;
-
 }
 
 header h1 {
     font-size: 24px;
-    color: #333;
+    color: #fff;
 }
 
 nav {
-    margin-left: auto; /* Pushes the navigation to the right */
+    display: flex;
+    max-width: 100%;
+    overflow-x: hidden; /* Avoid horizontal scrolling */
 }
 
 nav ul {
     list-style-type: none;
     display: flex;
-    margin: 0; /* Remove default margin */
-    padding: 0; /* Remove default padding */
+    margin: 0;
+    padding: 0;
 }
 
 nav ul li {
     margin-left: 20px;
+}
+
+.nav-button {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.nav-button:hover {
+    color: #ff66b2;
+}
+
+/* Hamburger Menu Styles */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.hamburger div {
+    width: 25px;
+    height: 3px;
+    background-color: #fff;
+    margin: 4px 0;
+}
+
+.mobile-menu {
+    display: none;
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.9);
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    width: 200px;
+    border-radius: 10px;
+    padding: 10px;
+    z-index: 1000;
+}
+
+.mobile-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mobile-menu ul li {
+    margin: 10px 0;
+}
+
+.mobile-menu ul li button {
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.mobile-menu ul li button:hover {
+    color: #ff66b2;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    nav {
+        display: none; /* Hide default nav on smaller screens */
+    }
+
+    .hamburger {
+        display: flex;
+    }
+    
+    .mobile-menu.show {
+        display: flex;
+    }
 }
 
 .hero {
@@ -89,9 +174,10 @@ nav ul li {
 }
 
 .buttons button:hover {
-    background-color:  rgba(35, 4, 4, 0.9);
+    background-color: rgba(35, 4, 4, 0.9);
 }
 
+/* How-to-Use Section */
 #how-to-use {
     margin-top: 80px;
     text-align: center;
@@ -99,17 +185,63 @@ nav ul li {
     margin-bottom: 30px;
 }
 
+#how-to-use h2 {
+    color: white; /* Title color */
+    font-size: 28px; /* Increase title size */
+    margin-bottom: 40px; /* Space below the title */
+}
+
 .steps {
     display: flex;
-    justify-content: space-around;
-    margin-top: 30px;
-    background-color: #000000;
+    justify-content: space-between; /* Space between steps */
+    align-items: flex-start; /* Align items to the top */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 30px; /* Add space between each step */
+    padding: 20px;
+}
+
+.step {
+    text-align: center; /* Center align content */
+    color: white; /* Text color */
+    max-width: 300px; /* Prevent content from stretching */
+    flex: 1; /* Ensure even spacing across steps */
+    margin: 0 auto; /* Center the step content */
 }
 
 .step img {
-    width: 100px;
-    height: 100px;
+    width: 100px; /* Keep images uniform in size */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 20px; /* Add space below the image */
 }
+
+.step h3 {
+    margin: 10px 0; /* Add spacing between the heading and text */
+    font-size: 20px; /* Adjust font size */
+    font-weight: bold;
+    color: #ff66b2; /* Pinkish shade for heading */
+}
+
+.step p {
+    font-size: 16px; /* Set font size for clarity */
+    line-height: 1.4; /* Adjust line spacing for compactness */
+    color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+    margin: 0; /* Remove extra margins */
+}
+
+/* Responsive Design for Steps */
+@media (max-width: 768px) {
+    .steps {
+        flex-direction: column; /* Stack steps vertically */
+        align-items: center; /* Center align content */
+        gap: 40px; /* Increase gap between stacked steps */
+    }
+
+    .step {
+        max-width: 90%; /* Use most of the available width */
+    }
+}
+
+
 
 /* New About Us Section */
 .about-us {
@@ -140,32 +272,6 @@ footer {
     color: #fff;
     padding: 20px;
     text-align: center;
-}
-
-.nav-button {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 5px 10px;
-    margin-left: 20px;
-}
-
-.nav-button:hover {
-    color: #ff66b2;
-}
-
-h2 {
-    color: white;
-}
-
-h3 {
-    color: white;
-}
-
-p {
-    color: white;
 }
 
 /* Animation Keyframes */
@@ -214,4 +320,15 @@ p {
 .tumor p {
     font-size: 16px;
     color: rgba(255, 255, 255, 0.9);
+}
+@media (max-width: 768px) {
+    .buttons button {
+        margin: 10px 0; /* Add vertical margin to buttons */
+        padding: 10px 20px;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: #fffdfd;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 }

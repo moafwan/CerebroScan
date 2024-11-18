@@ -20,3 +20,7 @@ function checkTumor() {
 function checkAlzheimers() {
     window.location.href = "check-alzheimer.html";
 }
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('show');
+}

@@ -13,6 +13,12 @@
         <div class="logo">
             <h1>CerebroScan</h1>
         </div>
+         <!-- Hamburger menu -->
+         <div class="hamburger" onclick="toggleMobileMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
         <nav>
             <ul>
                 <li><button class="nav-button" onclick="scrollToSection('home')">Home</button></li>
@@ -23,6 +29,15 @@
                 <li><button class="nav-button" onclick="goBack()">Back</button></li>
             </ul>
         </nav>
+        <!-- Navigation for mobile -->
+        <div class="mobile-menu" id="mobileMenu" >
+            <ul>
+                <li><button onclick="scrollToSection('home')">Home</button></li>
+                <li><button onclick="scrollToSection('how-to-use')">How to Use</button></li>
+                <li><button onclick="scrollToSection('about-tumor')">About Tumor</button></li>
+                <li><button onclick="scrollToSection('footer')">Contact Us</button></li>
+            </ul>
+        </div>
     </header>
     
     <section id="home" class="hero">
